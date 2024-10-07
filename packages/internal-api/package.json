@@ -1,0 +1,21 @@
+{
+  "name": "@e-life/internal-api",
+  "version": "1.0.0",
+  "description": "e life internal",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint --ignore-path ../../.gitignore .",
+    "lint:fix": "pnpm lint --fix"
+  },
+  "dependencies": {
+    "openai": "latest"
+  },
+  "peerDependencies": {
+    "@nestjs/common": ">= 9.2.1"
+  },
+  "devDependencies": {
+    "@nestjs/common": "9.2.1"
+  }
+}

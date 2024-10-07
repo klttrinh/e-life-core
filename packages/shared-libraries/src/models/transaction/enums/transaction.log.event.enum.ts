@@ -1,8 +1,0 @@
-export enum TransactionLogEventEnum {
-  CREATED = 'CREATED',
-  UPDATED_MANUALLY = 'UPDATED_MANUALLY',
-  UPDATED = 'UPDATED',
-  ERROR = 'ERROR',
-  MERCHANT_WEBHOOK = 'MERCHANT_WEBHOOK',
-  INFO = 'INFO',
-}

@@ -1,0 +1,34 @@
+{
+  "name": "@e-life/cron-service",
+  "version": "1.0.0",
+  "description": "e life cron service",
+  "author": "",
+  "license": "UNLICENSED",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node .",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint --ignore-path ../../.gitignore .",
+    "lint:fix": "pnpm lint --fix",
+    "env:copy": "cp .env.example .env",
+    "ci:dotenv": "../../scripts/ci-populate-dotenv.sh",
+    "ci:build": "../../scripts/ci-build-docker.sh"
+  },
+  "dependencies": {
+    "@e-life/internal-api": "workspace:*",
+    "cache-manager-ioredis": "2.1.0",
+    "dotenv": "16.0.0",
+    "fastify": "3.27.2",
+    "lodash": "^4.17.21",
+    "node-cron": "3.0.0",
+    "nodemailer": "6.8.0",
+    "request": "2.88.2",
+    "request-promise": "4.2.6",
+    "speakeasy": "2.0.0",
+    "winston": "3.8.2"
+  },
+  "devDependencies": {
+    "@types/node-cron": "3.0.7",
+    "@types/request-promise": "4.1.48"
+  }
+}
