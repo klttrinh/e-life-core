@@ -25,7 +25,13 @@
     "migrate:fresh:seed": "pnpm -r migrate:fresh:seed",
     "init": "node ./packages/shared-libraries/scripts.js init",
     "start:us": "pnpm --filter @e-life/auth-service start:dev",
-    "start:mr": "pnpm --filter @e-life/message-service start:dev",
+    "start:cs": "pnpm --filter @e-life/communication-service start:dev",
+    "start:ms": "pnpm --filter @e-life/message-service start:dev",
+    "start:me": "pnpm --filter @e-life/me-service start:dev",
+    "start:ns": "pnpm --filter @e-life/notification-service start:dev",
+    "start:pays": "pnpm --filter @e-life/payment-service start:dev",
+    "start:ps": "pnpm --filter @e-life/property-service start:dev",
+    "start:rrs": "pnpm --filter @e-life/review-rating-service start:dev",
     "test:cypress:rate": "npx cypress open --project ./apps/rate-service"
   },
   "engines": {
