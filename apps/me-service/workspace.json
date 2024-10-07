@@ -1,0 +1,17 @@
+{
+    "targets": {
+        "start:dev": {
+            "executor": "@nrwl/node:execute",
+            "options": {
+                "buildTarget": "@e-life/me-service:build",
+                "watch": true
+            },
+            "dependsOn": [
+                "^start:dev"
+            ],
+            "inputs": [
+                "src"
+            ]
+        }
+    }
+}

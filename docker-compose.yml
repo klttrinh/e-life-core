@@ -1,0 +1,210 @@
+services:
+  # ------------------------- Local S3 -------------------------
+
+#  minio:
+#    container_name: xcoins-minio
+#    image: quay.io/minio/minio
+#    command: server /data --console-address ":9090"
+#    restart: unless-stopped
+#    environment:
+#      MINIO_ROOT_USER: admin
+#      MINIO_ROOT_PASSWORD: password
+#    volumes:
+#      - xcoins-postgres-data:/data
+#    ports:
+#      - 9000:9000
+#      - 9090:9090
+#    networks:
+#      - xcoins-backend
+
+  # ------------------------- Kafka -------------------------
+
+  # zookeeper:
+  #   container_name: xcoins-zookeeper
+  #   image: confluentinc/cp-zookeeper:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  #   ports:
+  #     - 22181:2181
+  #   networks:
+  #     - xcoins-backend
+
+  # kafka:
+  #   container_name: xcoins-kafka
+  #   image: confluentinc/cp-kafka:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+  #     KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #   depends_on:
+  #     - zookeeper
+  #   ports:
+  #     - 29092:29092
+  #   networks:
+  #     - xcoins-backend
+
+  # kafka-ui:
+  #   container_name: xcoins-kafka-ui
+  #   image: provectuslabs/kafka-ui:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+  #     KAFKA_CLUSTERS_0_NAME: local
+  #     KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+  #   depends_on:
+  #     - zookeeper
+  #     - kafka
+  #   ports:
+  #     - 8080:8080
+  #   networks:
+  #     - xcoins-backend
+
+  # ------------------------- Database -------------------------
+
+  postgres:
+    container_name: e-life-postgres
+    image: postgres:15.0-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: e-life
+      POSTGRES_MULTIPLE_DATABASES: '"e-life-auth-service-api","e-life-communication-service-api","e-life-me-server-api","e-life-message-server-api","e-life-payment-server-api"'
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    volumes:
+      - ./scripts/docker-compose-multiple-postgres-db.sh:/docker-entrypoint-initdb.d/docker-compose-multiple-postgres-db.sh
+      - e-life-postgres-data:/data/postgres
+    ports:
+      - 5432:5432
+    networks:
+      - e-life-backend
+
+  pgadmin:
+    container_name: e-life-pgadmin
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@xcoins.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    depends_on:
+      - postgres
+    ports:
+      - 5050:80
+    networks:
+      - e-life-backend
+
+  # ------------------------- Redis -------------------------
+
+  redis:
+    container_name: xcoins-redis
+    image: redis:7.0.5-alpine
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    networks:
+      - e-life-backend
+
+  # ------------------------- Tracing -------------------------
+
+  jaeger           :
+    container_name: e-life-jaeger
+    image         : jaegertracing/all-in-one:latest
+    restart       : unless-stopped
+    environment   :
+      COLLECTOR_OTLP_ENABLED: true
+    ports         :
+      - 16686:16686 # serve frontend
+      - 4317:4317   # accept OpenTelemetry Protocol (OTLP) over gRPC
+    networks      :
+      - e-life-backend
+
+  # ------------------------- Payment Gateway API -------------------------
+
+  e-life-auth-service-api:
+    container_name: e-life-auth-service
+    image: e-life-auth-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - APP=@e-life/auth-service
+    restart: unless-stopped
+    env_file:
+      - apps/auth-service/.env
+    environment:
+      PROJECT_NAME: e-life-auth-service
+      VERSION: ${VERSION:-v1}
+      NODE_ENV: production
+      RELEASE_ENV: ${RELEASE_ENV:-development}
+      PORT: 3000
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      # Database
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_HOST:-5432}
+      DB_NAME: ${DB_NAME:-e-life-auth-service-api}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      SEQUELIZE_LOGGING: ${SEQUELIZE_LOGGING:-false}
+      # Redis
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+    depends_on:
+      - postgres
+      - redis
+      - jaeger
+    ports:
+      - 3000:3000
+    networks:
+      - e-life-backend
+
+  # ------------------------- Transaction Service -------------------------
+
+  e-life-communication-service-api:
+    container_name: e-life-communication-service
+    image: e-life-communication-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - APP=@e-life/communication-service
+    restart: unless-stopped
+    env_file:
+      - apps/communication-service/.env
+    environment:
+      PROJECT_NAME: e-life-communication-service
+      VERSION: ${VERSION:-v1}
+      NODE_ENV: production
+      RELEASE_ENV: ${RELEASE_ENV:-development}
+      PORT: 3000
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      # Database
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_HOST:-5432}
+      DB_NAME: ${DB_NAME:-e-life-communication-service-api}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      SEQUELIZE_LOGGING: ${SEQUELIZE_LOGGING:-false}
+      # Redis
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+    depends_on:
+      - postgres
+      - redis
+      - jaeger
+    ports:
+      - 3001:3000
+    networks:
+      - e-life-backend
+
+networks:
+  e-life-backend:
+
+volumes:
+  e-life-postgres-data:

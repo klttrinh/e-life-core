@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
+    "declaration": true,
+    "strict": false // TODO: remove this, why not now? as of writing this: Found 447 errors in 95 files.
+  },
+  "include": [ "src/**/*", "index.ts" ],
+  "exclude": [ "node_modules", "dist" ],
+  "compileOnSave": true
+}

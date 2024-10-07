@@ -1,0 +1,7 @@
+export enum CreditOrderStatusEnum {
+  READY_TO_ORDER = 'READY_TO_ORDER',
+  SUCCESSFUL = 'SUCCESSFUL',
+  FAILED = 'FAILED',
+  RETRYING = 'RETRYING',
+  SKIPPED = 'SKIPPED',
+}

@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "nrwl.angular-console",
+    "jasonnutter.vscode-codeowners",
+    "GitLab.gitlab-workflow",
+    "atlassian.atlascode"
+  ],
+  "unwantedRecommendations": [ ]
+}

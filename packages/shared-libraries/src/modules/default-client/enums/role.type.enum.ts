@@ -1,0 +1,7 @@
+// eslint-disable-next-line no-shadow
+export enum RoleTypeEnum {
+  MERCHANT_OPERATOR = 'MERCHANT_OPERATOR',
+  MERCHANT_ADMIN = 'MERCHANT_ADMIN',
+  XCOINS_ADMIN = 'XCOINS_ADMIN',
+  XCOINS_OPERATOR = 'XCOINS_OPERATOR',
+}

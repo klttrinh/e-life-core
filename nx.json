@@ -1,0 +1,131 @@
+{
+  "defaultBase": "master",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/nx-cloud",
+      "options": {
+        "accessToken": "MzEyN2I5ZGItYmQ3My00ZGQ5LWE3NTgtOWI3ZTU3ZTMwMWEyfHJlYWQtb25seQ==",
+        "cacheableOperations": [
+          "lint",
+          "build",
+          "test",
+          "document"
+        ]
+      }
+    }
+  },
+  "workspaceLayout": {
+    "appsDir": "apps",
+    "libsDir": "packages"
+  },
+  "namedInputs": {
+    "typescript": [
+      "{workspaceRoot}/tsconfig.json",
+      "{projectRoot}/tsconfig.json"
+    ],
+    "typescript:eslint": [
+      "typescript",
+      "{workspaceRoot}/tsconfig.eslint.json"
+    ],
+    "typescript:jest": [
+      "typescript"
+    ],
+    "eslint": [
+      "typescript:eslint",
+      "{workspaceRoot}/.eslintrc.yml",
+      "{projectRoot}/.eslintrc.yml"
+    ],
+    "jest": [
+      "typescript:jest",
+      "{workspaceRoot}/jest.config.ts",
+      "{projectRoot}/jest.config.ts"
+    ],
+    "src": [
+      "typescript",
+      "{projectRoot}/src/**/*"
+    ],
+    "tests": [
+      "jest",
+      "src",
+      "{projectRoot}/tests/**/*"
+    ],
+    "lint": [
+      "eslint",
+      "src",
+      "tests"
+    ]
+  },
+  "targetDefaults": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "eslintConfig": ".eslintrc.yml"
+      },
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "lint"
+      ],
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "src"
+      ],
+      "outputs": [
+        "{projectRoot}/dist"
+      ]
+    },
+    "start:dev": {
+      "executor": "@nrwl/node:execute",
+      "dependsOn": [
+        "^start:dev"
+      ],
+      "inputs": [
+        "src"
+      ]
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "options": {
+        "jestConfig": "{projectRoot}/jest.config.js"
+      },
+      "dependsOn": [
+        "^build",
+        "^test"
+      ],
+      "inputs": [
+        "tests"
+      ],
+      "outputs": [
+        "{projectRoot}/coverage",
+        "{projectRoot}/junit.xml"
+      ]
+    },
+    "document": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "src"
+      ],
+      "outputs": [
+        "{projectRoot}/docs"
+      ]
+    },
+    "package:publish": {
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": [
+        "src"
+      ]
+    }
+  }
+}
