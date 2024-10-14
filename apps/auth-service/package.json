@@ -17,7 +17,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "migration:generate": "pnpm typeorm -r ts-node/register migration:generate -d typeorm.config.ts",
+    "migrate": "pnpm typeorm migration:run -d typeorm.config.ts",
+    "migrate:rollback": "pnpm typeorm migration:revert -d typeorm.config.ts",
+    "migrate:rollback:all": "pnpm typeorm schema:drop -d typeorm.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -25,7 +29,11 @@
     "@nestjs/platform-fastify": "^10.4.4",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "@e-life/chat-gpt": "workspace:*"
+    "@e-life/chat-gpt": "workspace:*",
+    "@nestjs/config": "2.3.4",
+    "@nestjs/typeorm": "10.0.2",
+    "pg": "8.13.0",
+    "typeorm": "0.3.20"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

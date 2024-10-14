@@ -3,9 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "dist",
-    "strict": false // TODO: remove this, why not now? as of writing this: Found 573 error(s).
+    "declaration": true
   },
-  "include": ["src/**/*", "test/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"],
   "compileOnSave": true
 }

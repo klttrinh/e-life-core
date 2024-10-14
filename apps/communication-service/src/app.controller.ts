@@ -7,6 +7,7 @@ export class AppController {
 
   @Get()
   getHello(): string {
-    return this.appService.getHello();
+    const phone = '123456789';
+    return this.appService.splitPhoneNumber(phone);
   }
 }
