@@ -20,6 +20,7 @@ import * as allConfig from './config';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+
       useFactory: (config: ConfigService<Config>) => ({
         type: 'postgres',
         host: config.getOrThrow('databaseShare.host', { infer: true }),
