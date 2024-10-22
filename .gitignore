@@ -153,3 +153,7 @@ junit.xml
 
 # Nx
 .nx/
+
+
+# Volume
+volume/

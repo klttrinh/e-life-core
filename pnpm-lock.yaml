@@ -137,6 +137,9 @@ importers:
       '@e-life/chat-gpt':
         specifier: workspace:*
         version: link:../../packages/chatGPT
+      '@e-life/share-libraries':
+        specifier: workspace:*
+        version: link:../../packages/shared-libraries
       '@nestjs/common':
         specifier: ^10.0.0
         version: 10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)

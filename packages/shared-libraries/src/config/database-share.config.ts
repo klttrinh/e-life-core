@@ -16,7 +16,7 @@ export interface DatabaseShareConfig {
 }
 
 export const databaseShareConfig = registerAs(
-  'database',
+  'databaseShare',
   (): DatabaseShareConfig => ({
     host: env.DB_SHARE_HOST,
     port: +env.DB_SHARE_PORT,

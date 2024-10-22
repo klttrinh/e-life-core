@@ -1,4 +1,4 @@
-import { type DatabaseShareConfig } from './database-share.config';
+import { type DatabaseShareConfig } from '@e-life/share-libraries';
 import { type chatGPTConfig } from './chatGPT.config';
 
 export interface Config {

@@ -1,69 +1,105 @@
 services:
+
+  # ------------------------- Local AWS -------------------------
+
+  # localstack:
+  #   image: localstack/localstack:latest  # Sử dụng phiên bản latest hoặc một phiên bản cụ thể như 1.4.0
+  #   container_name: e-life-localstack
+  #   restart: unless-stopped
+  #   environment:
+  #     - SERVICES=s3,lambda,apigateway,cloudwatch,cloudwatchlogs,cloudformation,iam,kinesis,sts,stepfunctions,secretsmanager,ssm,route53,ec2,ecs,es,kafka
+  #     - DEBUG=1
+  #     - DATA_DIR=/tmp/localstack/new_data
+  #     - DEFAULT_REGION=us-east-1
+  #   ports:
+  #     - "4566:4566"  # Port mặc định cho các dịch vụ LocalStack
+  #     - "4510-4559:4510-4559"
+  #   volumes:
+  #     - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+  #     - "/var/run/docker.sock:/var/run/docker.sock"
+  #   networks:
+  #     - e-life-backend  
+
+
   # ------------------------- Local S3 -------------------------
 
-  #  minio:
-  #    container_name: xcoins-minio
-  #    image: quay.io/minio/minio
-  #    command: server /data --console-address ":9090"
-  #    restart: unless-stopped
-  #    environment:
-  #      MINIO_ROOT_USER: admin
-  #      MINIO_ROOT_PASSWORD: password
-  #    volumes:
-  #      - xcoins-postgres-data:/data
-  #    ports:
-  #      - 9000:9000
-  #      - 9090:9090
-  #    networks:
-  #      - xcoins-backend
+  minio:
+    container_name: e-life-minio
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9090"
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+    volumes:
+      - e-life-postgres-data:/data
+    ports:
+      - 9000:9000
+      - 9090:9090
+    networks:
+      - e-life-backend
+
+  # ------------------------- scylladb -------------------------
+
+  scylla:
+    image: scylladb/scylla:5.0.0
+    container_name: scylla-node
+    ports:
+      - "9042:9042" # Port cho CQL (Cassandra Query Language)
+      - "9180:9180" # Port cho API REST (nếu cần)
+    volumes:
+      - scylla_data:/var/lib/scylla
+    environment:
+      - SCYLLA_ENABLE_RPC=true
+    command: --smp 10 --memory=8G
 
   # ------------------------- Kafka -------------------------
 
-  # zookeeper:
-  #   container_name: xcoins-zookeeper
-  #   image: confluentinc/cp-zookeeper:latest
-  #   restart: unless-stopped
-  #   environment:
-  #     ZOOKEEPER_CLIENT_PORT: 2181
-  #     ZOOKEEPER_TICK_TIME: 2000
-  #   ports:
-  #     - 22181:2181
-  #   networks:
-  #     - xcoins-backend
+  zookeeper:
+    container_name: e-life-zookeeper
+    image: confluentinc/cp-zookeeper:latest
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - e-life-backend
 
-  # kafka:
-  #   container_name: xcoins-kafka
-  #   image: confluentinc/cp-kafka:latest
-  #   restart: unless-stopped
-  #   environment:
-  #     KAFKA_BROKER_ID: 1
-  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-  #     KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-  #   depends_on:
-  #     - zookeeper
-  #   ports:
-  #     - 29092:29092
-  #   networks:
-  #     - xcoins-backend
+  kafka:
+    container_name: e-life-kafka
+    image: confluentinc/cp-kafka:latest
+    restart: unless-stopped
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    networks:
+      - e-life-backend
 
-  # kafka-ui:
-  #   container_name: xcoins-kafka-ui
-  #   image: provectuslabs/kafka-ui:latest
-  #   restart: unless-stopped
-  #   environment:
-  #     KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-  #     KAFKA_CLUSTERS_0_NAME: local
-  #     KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-  #   depends_on:
-  #     - zookeeper
-  #     - kafka
-  #   ports:
-  #     - 8080:8080
-  #   networks:
-  #     - xcoins-backend
+  kafka-ui:
+    container_name: e-life-kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    restart: unless-stopped
+    environment:
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      - zookeeper
+      - kafka
+    ports:
+      - 8080:8080
+    networks:
+      - e-life-backend
 
   # ------------------------- Database -------------------------
 
@@ -160,14 +196,13 @@ services:
       NODE_ENV: production
       RELEASE_ENV: ${RELEASE_ENV:-development}
       PORT: 3000
-      APP_URL: ${APP_URL:-http://localhost:3000}
-      # Database
-      DB_HOST: ${DB_HOST:-postgres}
-      DB_PORT: ${DB_HOST:-5432}
-      DB_NAME: ${DB_NAME:-e-life-auth-service-api}
-      DB_USERNAME: ${DB_USERNAME:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      SEQUELIZE_LOGGING: ${SEQUELIZE_LOGGING:-false}
+      # Database shared
+      DB_SHARE_HOST: ${DB_SHARE_HOST:-postgres}
+      DB_SHARE_PORT: ${DB_SHARE_PORT:-5432}
+      DB_SHARE_NAME: ${DB_SHARE_NAME:-e-life-share-api}
+      DB_SHARE_USERNAME: ${DB_SHARE_USERNAME:-postgres}
+      DB_SHARE_PASSWORD: ${DB_SHARE_PASSWORD:-postgres}
+      DB_SHARE_SSL: ${DB_SHARE_SSL:-false}
       # Redis
       REDIS_HOST: ${REDIS_HOST:-redis}
       REDIS_PORT: ${REDIS_PORT:-6379}
@@ -248,7 +283,10 @@ services:
 
 networks:
   e-life-backend:
+    driver: bridge
 
 volumes:
   e-life-postgres-data:
   e-life-mongo-data:
+  localstack_data:
+  scylla_data:

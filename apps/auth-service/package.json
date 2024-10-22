@@ -30,6 +30,7 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "@e-life/chat-gpt": "workspace:*",
+    "@e-life/share-libraries": "workspace:*",
     "@nestjs/config": "2.3.4",
     "@nestjs/typeorm": "10.0.2",
     "pg": "8.13.0",

@@ -1,19 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import { env } from 'process';
-
-export interface DatabaseShareConfig {
-  host: string;
-
-  port: number;
-
-  database: string;
-
-  username: string;
-
-  password: string;
-
-  ssl: boolean;
-}
+import { type DatabaseShareConfig } from '@e-life/share-libraries';
 
 export const databaseShareConfig = registerAs(
   'databaseShare',
