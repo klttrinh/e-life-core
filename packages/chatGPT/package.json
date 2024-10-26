@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "env:copy": "cp .env.example .env",
     "build": "tsc",
     "lint": "eslint --ignore-path ../../.gitignore .",
     "lint:fix": "pnpm lint --fix"

@@ -21,7 +21,8 @@
     "migration:generate": "pnpm typeorm -r ts-node/register migration:generate -d typeorm.config.ts",
     "migrate": "pnpm typeorm migration:run -d typeorm.config.ts",
     "migrate:rollback": "pnpm typeorm migration:revert -d typeorm.config.ts",
-    "migrate:rollback:all": "pnpm typeorm schema:drop -d typeorm.config.ts"
+    "migrate:rollback:all": "pnpm typeorm schema:drop -d typeorm.config.ts",
+    "env:copy": "cp .env.example .env"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
