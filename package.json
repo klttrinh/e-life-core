@@ -32,6 +32,7 @@
     "start:pays": "pnpm --filter @e-life/payment-service start:dev",
     "start:ps": "pnpm --filter @e-life/property-service start:dev",
     "start:rrs": "pnpm --filter @e-life/review-rating-service start:dev",
+    "start:as": "pnpm --filter @e-life/account-service start:dev",
     "test:cypress:rate": "npx cypress open --project ./apps/rate-service"
   },
   "engines": {

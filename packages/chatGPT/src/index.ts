@@ -1,10 +1,8 @@
 /* eslint-disable max-len */
 import OpenAI from 'openai';
 
-// const token = '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';
-const token = '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';
+const token = '';
 const endpoint = 'https://models.inference.ai.azure.com';
-// const modelName = 'gpt-4o-mini';
 const modelName = 'gpt-4o';
 
 export async function main(role: string, content: string) {

@@ -155,7 +155,7 @@ services:
   # ------------------------- Redis -------------------------
 
   redis:
-    container_name: xcoins-redis
+    container_name: e-life-redis
     image: redis:7.0.5-alpine
     restart: unless-stopped
     ports:
